@@ -1,6 +1,9 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import AutoSelect from "@/components/AutoSelect";
+import DraftForm from "@/components/DraftForm";
+import { dailyLimit } from "@/lib/ai/provider";
+import TagsBox from "@/components/TagsBox";
 import BacklogBoard from "@/components/backlog/BacklogBoard";
 import QuickAdd from "@/components/backlog/QuickAdd";
 import { addMilestone, addRisk, addTask, makeCopy, saveDocDetails, setTaskStatus, toggleMilestone, updateProject } from "@/app/actions";
@@ -49,6 +52,8 @@ export default async function ProjectPage({ params }: { params: Promise<{ id: st
   const files = (tf.data ?? []) as unknown as TFile[];
   const templates = (tp.data ?? []) as unknown as Tpl[];
   const details = detailsForForm(project.profile);
+  const usedToday = (await supabase.from("ai_usage").select("calls").eq("day", new Date().toISOString().slice(0, 10)).maybeSingle()).data as unknown as { calls: number } | null;
+  const aiLeft = Math.max(0, dailyLimit() - (usedToday?.calls ?? 0));
   const ext = (name: string | null) => (name?.split(".").pop() ?? "").toLowerCase();
   const taskOptions = TASK_STATUSES.map((s) => ({ value: s, label: t.task[s] }));
 
@@ -58,6 +63,13 @@ export default async function ProjectPage({ params }: { params: Promise<{ id: st
         <Link href="/projects" className="text-sm text-muted hover:underline">{t.projects.title}</Link>
         <h1 className="text-2xl font-semibold tracking-tight">{project.name}</h1>
       </div>
+
+      <div className="flex flex-wrap items-start gap-3">
+        <div className="min-w-64 flex-1"><TagsBox supabase={supabase} entityType="project" entityId={project.id} path={`/projects/${project.id}`} t={t} canWrite={canWrite} /></div>
+        <Link href={`/notes?project=${project.id}`} className="chip">{t.notes.forProject}</Link>
+      </div>
+
+      {canWrite && <DraftForm projectId={project.id} t={t} left={aiLeft} />}
 
       <section>
         <h2 className="mb-2 font-medium">{t.projects.profile}</h2>

@@ -1,4 +1,4 @@
-// Runs migrations 0001-0003 on a SCRATCH Postgres, then every scenario of fixtures/backlog-scenarios.json against the
+// Runs migrations 0001-0004 on a SCRATCH Postgres, then every scenario of fixtures/backlog-scenarios.json against the
 // real trigger, plus extra tests (numbers per workspace, events, steps, test missions and probes, RLS for each role).
 // It starts its own temporary cluster (needs the Postgres 16 binaries and `psql`); nothing touches Supabase.
 // Run: npm run test:backlog-sql
@@ -56,7 +56,7 @@ const create = isRoot
 ok("scratch database", create.status === 0, create.stderr);
 
 // ---- 1. stubs + migrations ----
-for (const [name, file] of [["stubs", join(here, "fixtures/pg-stubs.sql")], ["0001", mig("0001_foundation.sql")], ["0002", mig("0002_template_files.sql")], ["0003", mig("0003_backlog_full.sql")]]) {
+for (const [name, file] of [["stubs", join(here, "fixtures/pg-stubs.sql")], ["0001", mig("0001_foundation.sql")], ["0002", mig("0002_template_files.sql")], ["0003", mig("0003_backlog_full.sql")], ["0004", mig("0004_notes_ai_api.sql")]]) {
   r = psql(["-f", file]);
   ok(`${name} runs`, r.code === 0, r.err.slice(0, 500));
   if (r.code !== 0) {

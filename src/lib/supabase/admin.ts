@@ -1,7 +1,7 @@
 import { createClient } from "@supabase/supabase-js";
 
 /**
- * Server-only client with full access (bypasses RLS). Used ONLY by the Telegram webhook,
+ * Server-only client with full access (bypasses RLS). Used ONLY by the the server webhook,
  * which has no browser session. Every query it runs must filter by user_id explicitly.
  */
 export function createAdminClient() {

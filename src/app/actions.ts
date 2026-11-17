@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { getContext } from "@/lib/workspace";
 import { LANG_COOKIE } from "@/lib/i18n";
+import { notify } from "@/lib/api/notify";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { FILES_BUCKET, buildProfile, detailsFromForm, fillDocument, safeFileName, type ProjectForDocs } from "@/lib/documents";
 import { METHODS, PHASES, PROJECT_STATUSES, TASK_STATUSES, pick } from "@/lib/options";
@@ -44,7 +45,9 @@ export async function createClientRecord(fd: FormData) {
   const name = str(fd, "name");
   if (!name) return;
   const kind = str(fd, "kind") === "internal" ? "internal" : "external";
-  fail((await supabase.from("clients").insert({ workspace_id: workspaceId, name, kind, notes: orNull(str(fd, "notes")) })).error);
+  const made = await supabase.from("clients").insert({ workspace_id: workspaceId, name, kind, notes: orNull(str(fd, "notes")) }).select("id").single();
+  fail(made.error);
+  notify(workspaceId, "client.created", { id: (made.data as unknown as { id: string }).id, name });
   revalidatePath("/clients");
 }
 
@@ -83,12 +86,13 @@ export async function createProject(fd: FormData) {
     .select("id")
     .single();
   fail(error);
+  notify(workspaceId, "project.created", { id: (data as unknown as { id: string }).id, name });
   revalidatePath("/projects");
   redirect(`/projects/${(data as unknown as { id: string }).id}`);
 }
 
 export async function updateProject(fd: FormData) {
-  const { supabase } = await getContext();
+  const { supabase, workspaceId } = await getContext();
   const id = str(fd, "id");
   const name = str(fd, "name");
   if (!id || !name) return;
@@ -112,6 +116,7 @@ export async function updateProject(fd: FormData) {
         .eq("id", id)
     ).error
   );
+  notify(workspaceId, "project.updated", { id, name });
   revalidatePath(`/projects/${id}`);
   revalidatePath("/projects");
 }
@@ -121,15 +126,19 @@ export async function addTask(fd: FormData) {
   const project_id = str(fd, "project_id");
   const title = str(fd, "title");
   if (!title || !project_id) return;
-  fail((await supabase.from("tasks").insert({ workspace_id: workspaceId, project_id, title, due_date: orNull(str(fd, "due_date")) })).error);
+  const made = await supabase.from("tasks").insert({ workspace_id: workspaceId, project_id, title, due_date: orNull(str(fd, "due_date")) }).select("id").single();
+  fail(made.error);
+  notify(workspaceId, "task.created", { id: (made.data as unknown as { id: string }).id, project_id, title });
   revalidatePath(`/projects/${project_id}`);
 }
 
 export async function setTaskStatus(fd: FormData) {
-  const { supabase } = await getContext();
+  const { supabase, workspaceId } = await getContext();
   const id = str(fd, "id");
   if (!id) return;
-  fail((await supabase.from("tasks").update({ status: pick(TASK_STATUSES, str(fd, "status"), "todo") }).eq("id", id)).error);
+  const status = pick(TASK_STATUSES, str(fd, "status"), "todo");
+  fail((await supabase.from("tasks").update({ status }).eq("id", id)).error);
+  notify(workspaceId, "task.updated", { id, status });
   revalidatePath(`/projects/${str(fd, "project_id")}`);
 }
 

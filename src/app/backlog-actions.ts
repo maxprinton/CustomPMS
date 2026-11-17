@@ -4,6 +4,7 @@
 // The rules are enforced by the database trigger; src/lib/backlog/data.ts also checks them first for a plain message.
 import { revalidatePath } from "next/cache";
 import { getContext } from "@/lib/workspace";
+import { notify } from "@/lib/api/notify";
 import {
   addItem,
   answerTest,
@@ -45,6 +46,7 @@ export async function addIdea(input: { title: string; type?: BacklogType; projec
     const c = await bctx();
     const r = await addItem(c.supabase, c.ws, { title: input.title, type: input.type, project_id: input.project_id, source: "web" });
     if (!r.ok) return { error: r.error };
+    notify(c.ws, "backlog.created", { id: r.item.id, number: r.item.number, title: r.item.title });
     refresh();
     return { ok: true, message: `BL-${r.item.number}`, item: r.item };
   } catch (e) {
@@ -68,6 +70,7 @@ export async function moveItemAction(input: {
       parked_reason: input.parked_reason,
     });
     if (!r.ok) return { error: r.error };
+    notify(c.ws, "backlog.moved", { id: r.item.id, number: r.item.number, status: r.item.status });
     refresh();
     return { ok: true, item: r.item, message: r.reopened ? "reopened" : undefined, triage: await maybeTriage(c, input.to) };
   } catch (e) {

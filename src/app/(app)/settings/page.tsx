@@ -1,5 +1,6 @@
 import LangSwitch from "@/components/LangSwitch";
 import { renameWorkspace } from "@/app/actions";
+import ApiSettings from "@/components/ApiSettings";
 import BacklogSettingsForm from "@/components/backlog/BacklogSettingsForm";
 import { loadSettings } from "@/lib/backlog/data";
 import { getDict } from "@/lib/i18n";
@@ -31,6 +32,7 @@ export default async function SettingsPage() {
         <h2 className="font-medium">{t.backlog.title} - {t.bl.caps}</h2>
         <BacklogSettingsForm settings={backlogSettings} t={t} canWrite={ctx.canWrite} />
       </section>
+      {ctx.role === "owner" ? <ApiSettings supabase={ctx.supabase} t={t} lang={lang} /> : <p className="text-sm text-muted">{t.api.ownersOnly}</p>}
       <section>
         <h2 className="mb-2 font-medium">{t.settings.members}</h2>
         <div className="card">

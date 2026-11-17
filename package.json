@@ -8,7 +8,9 @@
     "start": "next start",
     "test:documents": "node --no-warnings --experimental-transform-types --import ./scripts/alias-loader.mjs scripts/test-documents.ts",
     "test:backlog": "node --no-warnings --experimental-transform-types --import ./scripts/alias-loader.mjs scripts/test-backlog.ts",
-    "test:backlog-sql": "node scripts/test-backlog-sql.mjs"
+    "test:backlog-sql": "node scripts/test-backlog-sql.mjs",
+    "test:ai": "node --no-warnings --experimental-transform-types --import ./scripts/alias-loader.mjs scripts/test-ai.ts",
+    "test:api": "node --no-warnings --experimental-transform-types --import ./scripts/alias-loader.mjs scripts/test-api.ts"
   },
   "dependencies": {
     "@supabase/ssr": "^0.7.0",

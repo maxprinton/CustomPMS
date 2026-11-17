@@ -9,6 +9,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
     { href: "/", label: t.nav.dashboard },
     { href: "/clients", label: t.nav.clients },
     { href: "/projects", label: t.nav.projects },
+    { href: "/notes", label: t.nav.notes },
     { href: "/backlog", label: t.nav.backlog },
     { href: "/templates", label: t.nav.templates },
     { href: "/settings", label: t.nav.settings },

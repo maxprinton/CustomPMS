@@ -5,7 +5,7 @@ export const LANG_COOKIE = "cpms_lang";
 
 const en = {
   appName: "Custom PMS",
-  nav: { dashboard: "Dashboard", clients: "Clients", projects: "Projects", backlog: "Backlog", templates: "Templates", settings: "Settings", signOut: "Sign out" },
+  nav: { dashboard: "Dashboard", clients: "Clients", projects: "Projects", notes: "Notes", backlog: "Backlog", templates: "Templates", settings: "Settings", signOut: "Sign out" },
   login: {
     signIn: "Sign in to Custom PMS", create: "Create your account", email: "Email", password: "Password (min. 8 characters)",
     submitIn: "Sign in", submitUp: "Create account", wait: "Please wait...", forgot: "Forgot password?",
@@ -55,6 +55,20 @@ const en = {
     claudeAtWork: "Claude at work", workingNow: "Working now", notWorking: "Claude is not working on anything right now.", recentActivity: "Recent activity",
     tests: "Tests", noTests: "No tests for this item.", steps: "Steps", noSteps: "No steps for this item.",
   },
+  notes: {
+    title: "Notes", new: "New note", kind: "Kind", note: "Note", meeting: "Meeting", decision: "Decision", lesson: "Lesson", body: "Text", titlePlaceholder: "Title",
+    project: "Project", client: "Client", none: "No notes yet.", delete: "Delete", confirmDelete: "Delete this note?", saved: "Saved.", back: "Back to notes", updated: "Updated", search: "Search notes", forProject: "Notes for this project", open: "Open",
+    tags: "Tags", addTag: "Add a tag", noTags: "No tags yet.", removeTag: "Remove tag",
+  },
+  ai: {
+    title: "Draft with AI", kind: "What to draft", charter: "Project charter", status_report: "Status report", risk_review: "Risk review", meeting_agenda: "Meeting agenda", lessons: "Lessons learned",
+    run: "Draft it", running: "Drafting...", hint: "Uses this project's profile, milestones, risks and tasks. The draft is saved as a note you can edit.", left: "drafts left today", noKey: "AI is not set up yet. Add GEMINI_API_KEY in Vercel.", limit: "Daily AI limit reached. Try again tomorrow.", saved: "Draft saved as a note.", language: "Written in",
+  },
+  api: {
+    title: "API and integrations", keys: "API keys", newKey: "New key", keyName: "Name (for example: ERP)", create: "Create key", revoke: "Revoke", revoked: "Revoked", lastUsed: "Last used", never: "never",
+    showOnce: "Copy this key now. It is shown only once:", hint: "Send it as: Authorization: Bearer <key>. Base address: /api/v1.", ownersOnly: "Only the owner can manage keys and webhooks.",
+    webhooks: "Webhooks", webhookUrl: "https:// address that receives events", add: "Add webhook", events: "Events (empty = all)", secret: "Signing secret", deliveries: "Recent deliveries", noKeys: "No keys yet.", noHooks: "No webhooks yet.", delete: "Delete",
+  },
   roles: { owner: "Owner", member: "Member", viewer: "Viewer" },
 };
 
@@ -62,7 +76,7 @@ export type Dict = typeof en;
 
 const es: Dict = {
   appName: "Custom PMS",
-  nav: { dashboard: "Panel", clients: "Clientes", projects: "Proyectos", backlog: "Backlog", templates: "Plantillas", settings: "Ajustes", signOut: "Cerrar sesión" },
+  nav: { dashboard: "Panel", clients: "Clientes", projects: "Proyectos", notes: "Notas", backlog: "Backlog", templates: "Plantillas", settings: "Ajustes", signOut: "Cerrar sesión" },
   login: {
     signIn: "Inicia sesión en Custom PMS", create: "Crea tu cuenta", email: "Correo", password: "Contraseña (mín. 8 caracteres)",
     submitIn: "Iniciar sesión", submitUp: "Crear cuenta", wait: "Espera...", forgot: "¿Olvidaste tu contraseña?",
@@ -111,6 +125,20 @@ const es: Dict = {
     caps: "Límites", nowCap: "Límite de Ahora", nextCap: "Límite de Siguiente", verifyingCap: "Límite de Verificando", verifyDays: "Días de uso real antes de preguntar", triagePrompt: "Mostrar el aviso de planificación de 30 segundos", capsHint: "Los errores y los ítems reabiertos nunca cuentan para el límite de Ahora.",
     claudeAtWork: "Claude trabajando", workingNow: "Trabajando ahora", notWorking: "Claude no está trabajando en nada ahora mismo.", recentActivity: "Actividad reciente",
     tests: "Pruebas", noTests: "No hay pruebas para este ítem.", steps: "Pasos", noSteps: "No hay pasos para este ítem.",
+  },
+  notes: {
+    title: "Notas", new: "Nueva nota", kind: "Tipo", note: "Nota", meeting: "Reunión", decision: "Decisión", lesson: "Lección", body: "Texto", titlePlaceholder: "Título",
+    project: "Proyecto", client: "Cliente", none: "Todavía no hay notas.", delete: "Eliminar", confirmDelete: "¿Eliminar esta nota?", saved: "Guardado.", back: "Volver a las notas", updated: "Actualizada", search: "Buscar notas", forProject: "Notas de este proyecto", open: "Abrir",
+    tags: "Etiquetas", addTag: "Añadir etiqueta", noTags: "Todavía no hay etiquetas.", removeTag: "Quitar etiqueta",
+  },
+  ai: {
+    title: "Redactar con IA", kind: "Qué redactar", charter: "Acta de constitución", status_report: "Informe de estado", risk_review: "Revisión de riesgos", meeting_agenda: "Agenda de reunión", lessons: "Lecciones aprendidas",
+    run: "Redactar", running: "Redactando...", hint: "Usa el perfil, los hitos, los riesgos y las tareas de este proyecto. El borrador se guarda como una nota que puedes editar.", left: "borradores disponibles hoy", noKey: "La IA todavía no está configurada. Añade GEMINI_API_KEY en Vercel.", limit: "Se alcanzó el límite diario de IA. Inténtalo mañana.", saved: "Borrador guardado como nota.", language: "Escrito en",
+  },
+  api: {
+    title: "API e integraciones", keys: "Claves de API", newKey: "Nueva clave", keyName: "Nombre (por ejemplo: ERP)", create: "Crear clave", revoke: "Revocar", revoked: "Revocada", lastUsed: "Último uso", never: "nunca",
+    showOnce: "Copia esta clave ahora. Solo se muestra una vez:", hint: "Envíala como: Authorization: Bearer <clave>. Dirección base: /api/v1.", ownersOnly: "Solo el propietario puede gestionar claves y webhooks.",
+    webhooks: "Webhooks", webhookUrl: "Dirección https:// que recibe los eventos", add: "Añadir webhook", events: "Eventos (vacío = todos)", secret: "Secreto de firma", deliveries: "Entregas recientes", noKeys: "Todavía no hay claves.", noHooks: "Todavía no hay webhooks.", delete: "Eliminar",
   },
   roles: { owner: "Propietario", member: "Miembro", viewer: "Lector" },
 };
