@@ -1,10 +1,12 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import AutoSelect from "@/components/AutoSelect";
-import Board, { type BoardItem } from "@/components/Board";
-import BacklogForm from "@/components/BacklogForm";
+import BacklogBoard from "@/components/backlog/BacklogBoard";
+import QuickAdd from "@/components/backlog/QuickAdd";
 import { addMilestone, addRisk, addTask, makeCopy, saveDocDetails, setTaskStatus, toggleMilestone, updateProject } from "@/app/actions";
 import { DETAIL_LISTS, detailsForForm } from "@/lib/documents";
+import { listItems, loadSettings } from "@/lib/backlog/data";
+import { capsFrom } from "@/lib/backlog/board";
 import { getDict } from "@/lib/i18n";
 import { getContext } from "@/lib/workspace";
 import { METHODS, PHASES, PROJECT_STATUSES, TASK_STATUSES } from "@/lib/options";
@@ -22,14 +24,15 @@ type Risk = { id: string; title: string; score: number | null; response: string 
 
 export default async function ProjectPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const [{ t }, { supabase, canWrite }] = await Promise.all([getDict(), getContext()]);
-  const [p, c, tk, ms, rk, bl, cp, tf, tp] = await Promise.all([
+  const [{ t }, { supabase, canWrite, workspaceId }] = await Promise.all([getDict(), getContext()]);
+  const [p, c, tk, ms, rk, bl, bs, cp, tf, tp] = await Promise.all([
     supabase.from("projects").select("id, name, client_id, method, phase, status, objective, sponsor, start_date, end_date, budget, profile").eq("id", id).maybeSingle(),
     supabase.from("clients").select("id, name").eq("archived", false).order("name"),
     supabase.from("tasks").select("id, title, status, due_date").eq("project_id", id).order("created_at"),
     supabase.from("milestones").select("id, title, due_date, done").eq("project_id", id).order("due_date", { nullsFirst: false }),
     supabase.from("risks").select("id, title, score, response").eq("project_id", id).order("score", { ascending: false, nullsFirst: false }),
-    supabase.from("backlog_items").select("id, title, type, status, project_id").eq("project_id", id).order("updated_at", { ascending: false }),
+    listItems(supabase, workspaceId),
+    loadSettings(supabase, workspaceId),
     supabase.from("template_copies").select("id, title, lang, created_at, filled").eq("project_id", id).order("created_at", { ascending: false }),
     supabase.from("template_files").select("id, template_id, lang, file_name").order("lang"),
     supabase.from("templates").select("id, code, name, name_es, phase").eq("status", "active").order("code"),
@@ -40,7 +43,8 @@ export default async function ProjectPage({ params }: { params: Promise<{ id: st
   const tasks = (tk.data ?? []) as unknown as Task[];
   const milestones = (ms.data ?? []) as unknown as Milestone[];
   const risks = (rk.data ?? []) as unknown as Risk[];
-  const backlog = (bl.data ?? []) as unknown as BoardItem[];
+  const allBacklog = bl.items;
+  const backlog = allBacklog.filter((i) => i.project_id === id);
   const copies = (cp.data ?? []) as unknown as Copy[];
   const files = (tf.data ?? []) as unknown as TFile[];
   const templates = (tp.data ?? []) as unknown as Tpl[];
@@ -281,8 +285,8 @@ export default async function ProjectPage({ params }: { params: Promise<{ id: st
 
       <section className="space-y-3">
         <h2 className="font-medium">{t.projects.backlog}</h2>
-        {canWrite && <BacklogForm t={t} projectId={project.id} />}
-        <Board items={backlog} t={t} canWrite={canWrite} />
+        {canWrite && <QuickAdd t={t} projectId={project.id} />}
+        <BacklogBoard items={backlog} allItems={allBacklog} caps={capsFrom(bs)} t={t} canWrite={canWrite} projectNames={{}} compact />
       </section>
     </>
   );

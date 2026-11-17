@@ -7,7 +7,7 @@ import { getContext } from "@/lib/workspace";
 import { LANG_COOKIE } from "@/lib/i18n";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { FILES_BUCKET, buildProfile, detailsFromForm, fillDocument, safeFileName, type ProjectForDocs } from "@/lib/documents";
-import { BACKLOG_STATUSES, BACKLOG_TYPES, METHODS, PHASES, PROJECT_STATUSES, TASK_STATUSES, pick } from "@/lib/options";
+import { METHODS, PHASES, PROJECT_STATUSES, TASK_STATUSES, pick } from "@/lib/options";
 
 function str(fd: FormData, key: string): string {
   const v = fd.get(key);
@@ -168,35 +168,6 @@ export async function addRisk(fd: FormData) {
     ).error
   );
   revalidatePath(`/projects/${project_id}`);
-}
-
-export async function addBacklogItem(fd: FormData) {
-  const { supabase, workspaceId } = await getContext();
-  const title = str(fd, "title");
-  if (!title) return;
-  const project_id = orNull(str(fd, "project_id"));
-  fail(
-    (
-      await supabase.from("backlog_items").insert({
-        workspace_id: workspaceId,
-        title,
-        project_id,
-        type: pick(BACKLOG_TYPES, str(fd, "type"), "feature"),
-      })
-    ).error
-  );
-  revalidatePath("/backlog");
-  if (project_id) revalidatePath(`/projects/${project_id}`);
-}
-
-export async function moveBacklogItem(fd: FormData) {
-  const { supabase } = await getContext();
-  const id = str(fd, "id");
-  if (!id) return;
-  fail((await supabase.from("backlog_items").update({ status: pick(BACKLOG_STATUSES, str(fd, "status"), "inbox") }).eq("id", id)).error);
-  revalidatePath("/backlog");
-  const project_id = str(fd, "project_id");
-  if (project_id) revalidatePath(`/projects/${project_id}`);
 }
 
 export async function saveDocDetails(fd: FormData) {

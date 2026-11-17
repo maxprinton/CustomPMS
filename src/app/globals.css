@@ -169,3 +169,29 @@ a:focus-visible {
 .row:first-child {
   border-top: 0;
 }
+
+.btn-quiet {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--line-strong);
+  border-radius: 8px;
+  padding: 4px 10px;
+  min-height: 32px;
+  font-size: 13px;
+  color: var(--fg);
+  background: transparent;
+  cursor: pointer;
+}
+.btn-quiet:hover {
+  background: var(--subtle);
+}
+.btn-quiet:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+.btn-sm {
+  min-height: 32px;
+  padding: 4px 10px;
+  font-size: 13px;
+}

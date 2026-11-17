@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "test:documents": "node --no-warnings --experimental-transform-types --import ./scripts/alias-loader.mjs scripts/test-documents.ts"
+    "test:documents": "node --no-warnings --experimental-transform-types --import ./scripts/alias-loader.mjs scripts/test-documents.ts",
+    "test:backlog": "node --no-warnings --experimental-transform-types --import ./scripts/alias-loader.mjs scripts/test-backlog.ts",
+    "test:backlog-sql": "node scripts/test-backlog-sql.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.7.0",

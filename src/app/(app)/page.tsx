@@ -1,20 +1,25 @@
 import Link from "next/link";
+import StepsPanel from "@/components/backlog/StepsPanel";
+import TestMissions from "@/components/backlog/TestMissions";
+import VerifyPanel from "@/components/backlog/VerifyPanel";
+import { loadPanels } from "@/lib/backlog/panels";
 import { getDict } from "@/lib/i18n";
 import { getContext } from "@/lib/workspace";
 
-type Item = { id: string; title: string; project_id: string | null };
+type Item = { id: string; number: number; title: string; project_id: string | null };
 type Milestone = { id: string; title: string; due_date: string | null; project_id: string };
 
 export default async function DashboardPage() {
-  const [{ t }, { supabase }] = await Promise.all([getDict(), getContext()]);
+  const [{ t }, { supabase, canWrite, workspaceId }] = await Promise.all([getDict(), getContext()]);
   const count = (table: string) => supabase.from(table).select("*", { count: "exact", head: true });
-  const [projects, clients, tasks, risks, now, upcoming] = await Promise.all([
+  const [projects, clients, tasks, risks, now, upcoming, panels] = await Promise.all([
     count("projects").eq("status", "active"),
     count("clients").eq("archived", false),
     count("tasks").neq("status", "done"),
     count("risks").eq("status", "open"),
-    supabase.from("backlog_items").select("id, title, project_id").eq("status", "now").order("updated_at", { ascending: false }).limit(8),
+    supabase.from("backlog_items").select("id, number, title, project_id").is("deleted_at", null).eq("status", "now").order("updated_at", { ascending: false }).limit(8),
     supabase.from("milestones").select("id, title, due_date, project_id").eq("done", false).not("due_date", "is", null).order("due_date").limit(8),
+    loadPanels(supabase, workspaceId),
   ]);
   const stats = [
     { label: t.dashboard.activeProjects, value: projects.count ?? 0, href: "/projects" },
@@ -42,8 +47,8 @@ export default async function DashboardPage() {
           <div className="card">
             {nowItems.length === 0 && <p className="p-4 text-sm text-muted">{t.common.none}</p>}
             {nowItems.map((i) => (
-              <Link key={i.id} href={i.project_id ? `/projects/${i.project_id}` : "/backlog"} className="row">
-                {i.title}
+              <Link key={i.id} href={`/backlog/${i.number}`} className="row">
+                <span>BL-{i.number} {i.title}</span>
               </Link>
             ))}
           </div>
@@ -60,6 +65,11 @@ export default async function DashboardPage() {
             ))}
           </div>
         </section>
+      </div>
+      <div className="grid gap-3 lg:grid-cols-2">
+        <VerifyPanel due={panels.due} t={t} canWrite={canWrite} />
+        <StepsPanel pending={panels.pendingSteps} recent={[]} nowIso={panels.nowIso} t={t} canWrite={canWrite} />
+        <TestMissions tests={panels.tests} t={t} canWrite={canWrite} />
       </div>
     </>
   );

@@ -1,5 +1,7 @@
 import LangSwitch from "@/components/LangSwitch";
 import { renameWorkspace } from "@/app/actions";
+import BacklogSettingsForm from "@/components/backlog/BacklogSettingsForm";
+import { loadSettings } from "@/lib/backlog/data";
 import { getDict } from "@/lib/i18n";
 import { getContext } from "@/lib/workspace";
 
@@ -9,6 +11,7 @@ export default async function SettingsPage() {
   const [{ t, lang }, ctx] = await Promise.all([getDict(), getContext()]);
   const { data } = await ctx.supabase.from("workspace_members").select("user_id, role").eq("workspace_id", ctx.workspaceId).order("created_at");
   const members = (data ?? []) as unknown as Member[];
+  const backlogSettings = await loadSettings(ctx.supabase, ctx.workspaceId);
 
   return (
     <>
@@ -23,6 +26,10 @@ export default async function SettingsPage() {
           <input name="name" required defaultValue={ctx.workspaceName} disabled={ctx.role !== "owner"} className="input max-w-sm flex-1" aria-label={t.common.name} />
           {ctx.role === "owner" && <button className="btn">{t.common.save}</button>}
         </form>
+      </section>
+      <section className="card space-y-2 p-4">
+        <h2 className="font-medium">{t.backlog.title} - {t.bl.caps}</h2>
+        <BacklogSettingsForm settings={backlogSettings} t={t} canWrite={ctx.canWrite} />
       </section>
       <section>
         <h2 className="mb-2 font-medium">{t.settings.members}</h2>
