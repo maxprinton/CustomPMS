@@ -31,6 +31,12 @@ const en = {
   board: { inbox: "Inbox", later: "Later", next: "Next", now: "Now", verifying: "Verifying", done: "Done", parked: "Parked" },
   templates: { title: "Templates", empty: "The template library has not been imported yet.", builtIn: "Built-in", mine: "Mine" },
   settings: { title: "Settings", language: "Language", workspace: "Workspace", members: "Members", role: "Role", you: "you" },
+  docs: {
+    title: "Documents", details: "Document details", detailsHint: "Used to fill templates, together with the profile, milestones, risks and the client's contacts above.",
+    organization: "Organization", manager: "Project manager", preparedBy: "Prepared by",
+    scope_in: "In scope", scope_out: "Out of scope", success_criteria: "Success criteria", assumptions: "Assumptions", constraints: "Constraints",
+    onePerLine: "One per line", create: "Create filled copy", choose: "Choose a template", download: "Download", blanks: "blanks filled", notFilled: "copied as is",
+  },
   roles: { owner: "Owner", member: "Member", viewer: "Viewer" },
 };
 
@@ -64,6 +70,12 @@ const es: Dict = {
   board: { inbox: "Entrada", later: "Después", next: "Siguiente", now: "Ahora", verifying: "Verificando", done: "Hecho", parked: "Aparcado" },
   templates: { title: "Plantillas", empty: "La biblioteca de plantillas todavía no se ha importado.", builtIn: "Incluidas", mine: "Mías" },
   settings: { title: "Ajustes", language: "Idioma", workspace: "Espacio de trabajo", members: "Miembros", role: "Rol", you: "tú" },
+  docs: {
+    title: "Documentos", details: "Datos para documentos", detailsHint: "Se usan para rellenar plantillas, junto con el perfil, los hitos, los riesgos y los contactos del cliente de arriba.",
+    organization: "Organización", manager: "Director/a del proyecto", preparedBy: "Elaborado por",
+    scope_in: "Dentro del alcance", scope_out: "Fuera del alcance", success_criteria: "Criterios de éxito", assumptions: "Supuestos", constraints: "Restricciones",
+    onePerLine: "Uno por línea", create: "Crear copia rellenada", choose: "Elige una plantilla", download: "Descargar", blanks: "espacios rellenados", notFilled: "copiada tal cual",
+  },
   roles: { owner: "Propietario", member: "Miembro", viewer: "Lector" },
 };
 

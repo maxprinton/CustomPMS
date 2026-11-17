@@ -5,6 +5,8 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { getContext } from "@/lib/workspace";
 import { LANG_COOKIE } from "@/lib/i18n";
+import { createAdminClient } from "@/lib/supabase/admin";
+import { FILES_BUCKET, buildProfile, detailsFromForm, fillDocument, safeFileName, type ProjectForDocs } from "@/lib/documents";
 import { BACKLOG_STATUSES, BACKLOG_TYPES, METHODS, PHASES, PROJECT_STATUSES, TASK_STATUSES, pick } from "@/lib/options";
 
 function str(fd: FormData, key: string): string {
@@ -195,4 +197,81 @@ export async function moveBacklogItem(fd: FormData) {
   revalidatePath("/backlog");
   const project_id = str(fd, "project_id");
   if (project_id) revalidatePath(`/projects/${project_id}`);
+}
+
+export async function saveDocDetails(fd: FormData) {
+  const { supabase } = await getContext();
+  const id = str(fd, "id");
+  if (!id) return;
+  fail((await supabase.from("projects").update({ profile: detailsFromForm((k) => str(fd, k)) }).eq("id", id)).error);
+  revalidatePath(`/projects/${id}`);
+}
+
+/** Makes a working copy of one template file for a project, with every blank the engine is sure about filled in. */
+export async function makeCopy(fd: FormData) {
+  const { supabase, workspaceId, workspaceName } = await getContext();
+  const project_id = str(fd, "project_id");
+  const file_id = str(fd, "file_id");
+  if (!project_id || !file_id) return;
+  const admin = createAdminClient();
+  if (!admin) throw new Error("File storage is not set up yet.");
+
+  const [f, p] = await Promise.all([
+    supabase.from("template_files").select("id, template_id, lang, storage_path, file_name, mime").eq("id", file_id).maybeSingle(),
+    supabase.from("projects").select("id, name, code, method, objective, sponsor, start_date, end_date, budget, profile, client_id").eq("id", project_id).maybeSingle(),
+  ]);
+  const file = f.data as unknown as { id: string; template_id: string; lang: "en" | "es"; storage_path: string; file_name: string | null; mime: string | null } | null;
+  const project = p.data as unknown as (ProjectForDocs & { id: string; client_id: string | null }) | null;
+  if (!file || !project) throw new Error("Template or project not found.");
+
+  const [t, c, k, m, r] = await Promise.all([
+    supabase.from("templates").select("code, name, name_es").eq("id", file.template_id).maybeSingle(),
+    project.client_id ? supabase.from("clients").select("name").eq("id", project.client_id).maybeSingle() : Promise.resolve({ data: null }),
+    project.client_id ? supabase.from("contacts").select("name, role_title, email").eq("client_id", project.client_id).order("name") : Promise.resolve({ data: [] }),
+    supabase.from("milestones").select("title, due_date").eq("project_id", project_id).order("due_date", { nullsFirst: false }),
+    supabase.from("risks").select("title, response").eq("project_id", project_id).order("score", { ascending: false, nullsFirst: false }),
+  ]);
+  const template = t.data as unknown as { code: string; name: string; name_es: string | null } | null;
+  const profile = buildProfile({
+    project,
+    clientName: (c.data as unknown as { name: string } | null)?.name ?? null,
+    workspaceName,
+    contacts: (k.data ?? []) as unknown as { name: string; role_title: string | null; email: string | null }[],
+    milestones: (m.data ?? []) as unknown as { title: string; due_date: string | null }[],
+    risks: (r.data ?? []) as unknown as { title: string; response: string | null }[],
+  });
+
+  const original = await admin.storage.from(FILES_BUCKET).download(file.storage_path);
+  if (original.error || !original.data) throw new Error("Could not read the template file.");
+  const sourceName = file.file_name ?? "template";
+  const result = await fillDocument(sourceName, new Uint8Array(await original.data.arrayBuffer()), profile, file.lang);
+
+  const id = crypto.randomUUID();
+  const file_name = safeFileName(`${project.code || project.name}-${sourceName}`);
+  const storage_path = `ws/${workspaceId}/copies/${id}/${file_name}`;
+  const title = `${template?.code ?? ""} ${(file.lang === "es" && template?.name_es) || template?.name || sourceName}`.trim();
+  fail(
+    (
+      await supabase.from("template_copies").insert({
+        id,
+        workspace_id: workspaceId,
+        template_id: file.template_id,
+        project_id,
+        client_id: project.client_id,
+        title,
+        lang: file.lang,
+        source_file_id: file.id,
+        storage_path,
+        file_name,
+        filled: { filled: result.filled, skipped: result.skipped, fillable: result.fillable },
+        filled_at: new Date().toISOString(),
+      })
+    ).error
+  );
+  const up = await admin.storage.from(FILES_BUCKET).upload(storage_path, result.bytes, { contentType: file.mime ?? "application/octet-stream" });
+  if (up.error) {
+    await supabase.from("template_copies").delete().eq("id", id);
+    throw new Error("Could not save the filled copy.");
+  }
+  revalidatePath(`/projects/${project_id}`);
 }
