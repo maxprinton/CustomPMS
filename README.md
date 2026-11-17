@@ -14,3 +14,10 @@ Project management software for clients, projects, templates, backlog and AI-ass
 ## Database notes
 - `0001_foundation.sql` creates every table and its access rules.
 - The 132 built-in templates (code, English and Spanish names, phase, method, file type) were copied from Personal OS into `templates` as migration `seed_builtin_templates`, applied directly in Supabase. Their files are not copied yet.
+
+## Tests
+`npm run test:backlog`, `test:backlog-sql` (scratch Postgres), `test:ai`, `test:api`, `test:documents`.
+In the app, the Backlog page has test missions for hands-on testing at the end.
+
+## API
+See [docs/API.md](docs/API.md).

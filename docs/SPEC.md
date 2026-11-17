@@ -56,11 +56,11 @@ Interface text is English and Spanish, switchable, stored per browser. Look: cle
 
 **Phase 2: Templates.** Import the 132 built-in templates and their files from Personal OS. Library screen with filters. Working copies filled from project and client data (Word, Excel, PowerPoint, PDF), in English or Spanish. "Out of date" detection when project data changes.
 
-**Phase 3: Backlog, full port.** Steps, tests, activity history, WIP limits, triage prompt, per-project board.
+**Phase 3: Backlog, full port (built, tested at the end through test missions).** Steps, tests, activity history, WIP limits, triage prompt, per-project board.
 
-**Phase 4: AI and notes.** AI drafts for charter sections, risks, milestones, status reports and meeting summaries, using project and client context, with a usage cap. Notes editor as project journal. Tags.
+**Phase 4: AI and notes (built).** AI drafts for charter sections, risks, milestones, status reports and meeting summaries, using project and client context, with a usage cap. Notes editor as project journal. Tags.
 
-**Phase 5: ERP bridge.** REST API under `/api/v1` authenticated with workspace API keys (stored hashed). Endpoints for clients, projects, tasks. Webhooks for status changes. `erp_links` maps ERP IDs to CPMS records. Designed once the ERP's platform and first data flow are known.
+**Phase 5: ERP bridge (built, see docs/API.md; adapt once the ERP's platform and first data flow are known).** REST API under `/api/v1` authenticated with workspace API keys (stored hashed). Endpoints for clients, projects, tasks. Webhooks for status changes. `erp_links` maps ERP IDs to CPMS records. Designed once the ERP's platform and first data flow are known.
 
 **Later.** Search, "Ask" AI chat per project, recurring tasks, Coursera clipper, dashboards, time tracking and billing.
 
