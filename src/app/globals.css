@@ -1,0 +1,171 @@
+@import "tailwindcss";
+
+:root {
+  color-scheme: light;
+  --app: #f7f7f5;
+  --surface: #ffffff;
+  --subtle: #efefec;
+  --line: #e2e2dd;
+  --line-strong: #8a8a82;
+  --fg: #1c1c1a;
+  --muted: #5c5c56;
+  --accent: #2f5d50;
+  --accent-hover: #244a40;
+  --accent-fg: #ffffff;
+  --accent-soft: #e3eeea;
+  --success: #166534;
+  --danger: #b3321d;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+    --app: #161615;
+    --surface: #1e1e1c;
+    --subtle: #272725;
+    --line: #33332f;
+    --line-strong: #7d7d75;
+    --fg: #f1f1ee;
+    --muted: #a9a9a1;
+    --accent: #7cc0aa;
+    --accent-hover: #98d2be;
+    --accent-fg: #10201b;
+    --accent-soft: #22332e;
+    --success: #7ddba0;
+    --danger: #ff9b8a;
+  }
+}
+
+@theme inline {
+  --color-app: var(--app);
+  --color-surface: var(--surface);
+  --color-subtle: var(--subtle);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-fg: var(--fg);
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --color-accent-fg: var(--accent-fg);
+  --color-accent-soft: var(--accent-soft);
+  --color-success: var(--success);
+  --color-danger: var(--danger);
+  --font-sans: var(--font-figtree), ui-sans-serif, system-ui, sans-serif;
+}
+
+body {
+  background: var(--app);
+  color: var(--fg);
+  font-family: var(--font-figtree), ui-sans-serif, system-ui, sans-serif;
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+}
+
+.input {
+  width: 100%;
+  background: var(--surface);
+  color: var(--fg);
+  border: 1px solid var(--line-strong);
+  border-radius: 8px;
+  padding: 8px 10px;
+  min-height: 40px;
+}
+.input-sm {
+  width: auto;
+  min-height: 32px;
+  padding: 4px 8px;
+  font-size: 13px;
+}
+.input:focus-visible,
+.btn:focus-visible,
+.chip:focus-visible,
+.nav-link:focus-visible,
+a:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--accent);
+  color: var(--accent-fg);
+  border-radius: 8px;
+  padding: 8px 14px;
+  min-height: 40px;
+  font-weight: 500;
+  cursor: pointer;
+}
+.btn:hover {
+  background: var(--accent-hover);
+}
+.btn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.chip {
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 4px 12px;
+  font-size: 13px;
+  color: var(--muted);
+  cursor: pointer;
+}
+.chip-active {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  color: var(--fg);
+}
+
+.nav-link {
+  display: block;
+  white-space: nowrap;
+  border-radius: 8px;
+  padding: 8px 12px;
+  color: var(--muted);
+}
+.nav-link:hover {
+  background: var(--subtle);
+  color: var(--fg);
+}
+.nav-link-active {
+  background: var(--accent-soft);
+  color: var(--fg);
+  font-weight: 500;
+}
+
+.badge {
+  display: inline-block;
+  border-radius: 999px;
+  background: var(--subtle);
+  color: var(--muted);
+  padding: 1px 8px;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.label {
+  display: block;
+  font-size: 13px;
+  color: var(--muted);
+  margin-bottom: 4px;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 14px;
+  border-top: 1px solid var(--line);
+}
+.row:first-child {
+  border-top: 0;
+}
